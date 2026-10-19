@@ -1,0 +1,438 @@
+<title>Cat x Tribe Match</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap" rel="stylesheet">
+<style>
+  /* Layout: centered hero with three headline counts and a coverage strip, then the job description matched line by line in three columns (the role asks / what I have done and built / how I would build it at Tribe), then a 30-60-90 plan. Palette and type follow the tribe.ai site. */
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --ink: #06141B;
+    --muted: #4F5B60;
+    --line: #D9DCD6;
+    --accent: #0A99C3;
+    --label: #07404F;
+    --tint: #EEF5F6;
+    --dot-1: #65D9EE;
+    --dot-2: #0A99C3;
+    --dot-3: #FF7C0F;
+    --dot-4: #AD5913;
+    --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
+    --font-body: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #06141B;
+      --surface: #0C2029;
+      --ink: #EBEBE2;
+      --muted: #9FB0B8;
+      --line: #1F3A46;
+      --accent: #65D9EE;
+      --label: #B2F3FF;
+      --tint: #0C2029;
+      --dot-1: #65D9EE;
+      --dot-2: #2BB4DC;
+      --dot-3: #FF7C0F;
+      --dot-4: #E08A3C;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #06141B;
+    --surface: #0C2029;
+    --ink: #EBEBE2;
+    --muted: #9FB0B8;
+    --line: #1F3A46;
+    --accent: #65D9EE;
+    --label: #B2F3FF;
+    --tint: #0C2029;
+    --dot-1: #65D9EE;
+    --dot-2: #2BB4DC;
+    --dot-3: #FF7C0F;
+    --dot-4: #E08A3C;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    padding-block: 1.5rem 3rem;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 3.5rem; }
+
+  .caption {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* Hero */
+  .hero { position: relative; overflow: hidden; text-align: center; padding: 4rem 0.5rem 3rem; }
+  .orbits { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .orbits circle.ring { fill: none; stroke: var(--line); stroke-width: 1; }
+  .orbits .d1 { fill: var(--dot-1); }
+  .orbits .d2 { fill: var(--dot-2); }
+  .orbits .d3 { fill: var(--dot-3); }
+  .orbits .d4 { fill: var(--dot-4); }
+  .hero-inner { position: relative; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2.25rem, 6vw, 4rem);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    margin: 0;
+    max-width: 20ch;
+    text-wrap: balance;
+  }
+  h1 .hl { color: var(--accent); }
+  .who { margin: 0; color: var(--muted); font-size: 1.125rem; max-width: 58ch; text-wrap: pretty; }
+  .who strong { color: var(--ink); font-weight: 600; }
+
+  /* Headline counts and coverage strip */
+  .counts { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem 3.5rem; margin-top: 1.25rem; }
+  .count { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; min-width: 8.5rem; }
+  .count b { font-family: var(--font-display); font-weight: 300; font-size: 3.5rem; line-height: 1; letter-spacing: -0.02em; }
+  .count span { font-size: 0.9375rem; color: var(--muted); max-width: 16ch; text-align: center; }
+  .strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 0.5rem; }
+  .sq { width: 26px; height: 26px; border-radius: 4px; }
+  .sq.done { background: var(--dot-1); }
+  .sq.built { background: var(--dot-2); }
+  .sq.both { background: linear-gradient(135deg, var(--dot-1) 50%, var(--dot-2) 50%); }
+  .sq.would { background: var(--dot-3); }
+  .legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem 1.5rem; font-size: 0.875rem; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .legend i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.625rem, 3.2vw, 2.25rem);
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    margin: 0 0 0.5rem;
+    text-align: center;
+  }
+  .sub { text-align: center; color: var(--muted); margin: 0 auto 2rem; max-width: 56ch; }
+
+  /* Matrix */
+  .cols, .row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 1.15fr); gap: 2rem; }
+  .cols { padding-bottom: 0.75rem; }
+  .group { margin-top: 2.25rem; }
+  .group h3 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 1.75rem;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.25rem;
+  }
+  .row { border-top: 1px solid var(--line); padding-block: 1.375rem; }
+  .row > * { min-width: 0; }
+  .ask { font-weight: 600; font-size: 1.0625rem; line-height: 1.4; margin: 0; }
+  .have p, .build { margin: 0; }
+  .have p { color: var(--muted); font-size: 1rem; }
+  .have p + p { margin-top: 0.5rem; }
+  .have p b { color: var(--ink); font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 0.625rem; }
+  .chip {
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 0.1875rem 0.5rem; border-radius: 4px; color: var(--ink);
+  }
+  .chip.done { background: color-mix(in srgb, var(--dot-1) 38%, transparent); }
+  .chip.built { background: color-mix(in srgb, var(--dot-2) 28%, transparent); }
+  .chip.would { background: color-mix(in srgb, var(--dot-3) 34%, transparent); }
+  .build { background: var(--tint); border: 1px solid var(--line); border-radius: 6px; padding: 0.875rem 1rem; color: var(--ink); font-size: 1rem; align-self: start; }
+  .have::before, .build::before { content: attr(data-label); display: none; }
+
+  /* 30 60 90 */
+  .plan { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .step { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1.5rem; min-width: 0; }
+  .step b { display: block; font-family: var(--font-display); font-weight: 300; font-size: 3rem; line-height: 1; letter-spacing: -0.02em; color: var(--accent); }
+  .step .caption { margin: 0.25rem 0 0.75rem; }
+  .step p { margin: 0; color: var(--muted); font-size: 1rem; }
+
+  footer {
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    border-top: 1px solid var(--line); padding-top: 1.5rem; text-align: center;
+  }
+  footer .caption strong { color: var(--ink); font-weight: 600; }
+  footer p { margin: 0; color: var(--muted); font-size: 0.9375rem; }
+
+  @media (max-width: 900px) {
+    .cols { display: none; }
+    .row { grid-template-columns: minmax(0, 1fr); gap: 0.875rem; }
+    .have::before, .build::before {
+      display: block; margin-bottom: 0.375rem;
+      font-size: 0.75rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+    }
+    .build::before { color: var(--label); }
+    .plan { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 560px) {
+    body { padding-block: 1rem 2rem; }
+    .wrap { gap: 2.5rem; }
+    .hero { padding: 3rem 0 2rem; }
+    .count b { font-size: 3rem; }
+    .sq { width: 22px; height: 22px; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <svg class="orbits" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+      <circle class="ring" cx="500" cy="280" r="130"/>
+      <circle class="ring" cx="500" cy="280" r="215"/>
+      <circle class="ring" cx="500" cy="280" r="310"/>
+      <circle class="ring" cx="500" cy="280" r="420"/>
+      <circle class="d1" cx="330" cy="190" r="8"/>
+      <circle class="d2" cx="780" cy="150" r="7"/>
+      <circle class="d3" cx="860" cy="360" r="6"/>
+      <circle class="d4" cx="210" cy="400" r="5"/>
+      <circle class="d1" cx="640" cy="500" r="4"/>
+    </svg>
+    <div class="hero-inner">
+      <p class="caption">Senior People Operations Manager · Tribe AI</p>
+      <h1>Your job description, <span class="hl">matched</span> to work I have done and tools I have built.</h1>
+      <p class="who"><strong>Cat Nolasco.</strong> People Ops leader, 13+ years, SHRM-CP. Every line of the role is below with what I have done, what I have built with AI, and how I would build it at Tribe.</p>
+      <div class="counts">
+        <div class="count"><b>9</b><span>lines I have done in past roles</span></div>
+        <div class="count"><b>11</b><span>lines I have built as AI tools</span></div>
+        <div class="count"><b>2</b><span>lines I would build next</span></div>
+      </div>
+      <div class="strip" role="img" aria-label="Coverage of the 16 lines in the job description: 9 done in past roles, 11 built as AI tools, 2 to build next">
+        <i class="sq both"></i><i class="sq both"></i><i class="sq built"></i><i class="sq built"></i>
+        <i class="sq both"></i><i class="sq built"></i><i class="sq done"></i><i class="sq both"></i>
+        <i class="sq done"></i><i class="sq both"></i><i class="sq both"></i><i class="sq done"></i>
+        <i class="sq built"></i><i class="sq would"></i><i class="sq would"></i><i class="sq built"></i>
+      </div>
+      <div class="legend">
+        <span><i class="sq done"></i>Done</span>
+        <span><i class="sq built"></i>Built with AI</span>
+        <span><i class="sq both"></i>Both</span>
+        <span><i class="sq would"></i>Would build</span>
+      </div>
+    </div>
+  </header>
+
+  <section aria-labelledby="match-h">
+    <h2 id="match-h">Line by line</h2>
+    <p class="sub">The 16 lines come straight from Tribe's posting, in its order.</p>
+
+    <div class="cols caption" aria-hidden="true">
+      <span>The role asks</span>
+      <span>What I have done and built</span>
+      <span>How I would build it at Tribe</span>
+    </div>
+
+    <div class="group">
+      <h3>Systems, automation and data</h3>
+
+      <article class="row">
+        <h4 class="ask">Own Rippling as the source of truth, and build the integrations and automations on top of it</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip done">Done</span><span class="chip built">Built</span></div>
+          <p>Led HRIS migrations at Ridecell. Fluent in Rippling, Workday, ADP, SuccessFactors and UKG.</p>
+          <p>MCP workflows for onboarding, offboarding, stay and exit interviews, leave analysis and org chart pulls.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">Week one: audit the Rippling setup and list every manual step. Then rebuild those steps as automations and MCP integrations.</p>
+      </article>
+
+      <article class="row">
+        <h4 class="ask">Audit and continuously optimize the setup</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip done">Done</span><span class="chip built">Built</span></div>
+          <p>Set up People Ops automations and playbooks at Ridecell.</p>
+          <p>Built a compliance calendar and auditor.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">Run the auditor on Tribe's own setup on a schedule, so the list of what to fix updates itself.</p>
+      </article>
+
+      <article class="row">
+        <h4 class="ask">Build and own reporting and people data</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip built">Built</span></div>
+          <p>Org chart pulls and leave analysis through MCP. An Exit Interview Analyzer that turns exits into themes leadership can act on.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">One reporting layer on top of Rippling that leaders can ask questions of in plain language.</p>
+      </article>
+    </div>
+
+    <div class="group">
+      <h3>The employee lifecycle</h3>
+
+      <article class="row">
+        <h4 class="ask">Own offer generation and sending, from approval through signature</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip built">Built</span></div>
+          <p>Offer/Comp Reviewer checks an offer before it goes out. C-suite TA Orchestrator coordinates executive hiring.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">Generate the offer from the approved record in Rippling and Ashby, send it, and track it to signature.</p>
+      </article>
+
+      <article class="row">
+        <h4 class="ask">Own onboarding, from backend automation to the new-hire experience</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip done">Done</span><span class="chip built">Built</span></div>
+          <p>Built the People Ops function at Ridecell across eight countries.</p>
+          <p>An onboarding workflow, plus an Onboarding Chatbot that answers new-hire questions from day one, with steps running through MCP.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">An accepted offer starts one tracked run: accounts, equipment, paperwork and a day-one plan, with the new hire able to ask questions at any step.</p>
+      </article>
+
+      <article class="row">
+        <h4 class="ask">Own offboarding, employment changes, leaves of absence and time-off requests</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip built">Built</span></div>
+          <p>An offboarding workflow, the Multi-Agent Offboarding System, Employee Change Agent, Parental Leave Agent and MCP leave analysis.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">Every change, leave and exit starts one tracked run that updates Rippling and notifies IT, payroll and benefits.</p>
+      </article>
+    </div>
+
+    <div class="group">
+      <h3>Benefits, compliance and work authorization</h3>
+
+      <article class="row">
+        <h4 class="ask">Own benefits administration end to end</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip done">Done</span></div>
+          <p>Ran benefits at Ridecell across eight countries: the US, UK, Germany, Spain, France, India, Japan and Dubai.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">A benefits assistant that answers plan questions and tracks enrollment and renewal dates.</p>
+      </article>
+
+      <article class="row">
+        <h4 class="ask">Own compliance, registrations and record-keeping</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip done">Done</span><span class="chip built">Built</span></div>
+          <p>Stood up WVPP, E-Verify, I-9 and local compliance programs from zero.</p>
+          <p>Built I-9 Compliance QA and a compliance calendar and auditor.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">A year-round calendar of registrations and deadlines with owners and automatic reminders.</p>
+      </article>
+
+      <article class="row">
+        <h4 class="ask">Run immigration and work authorization</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip done">Done</span></div>
+          <p>Ran immigration programs at Ridecell.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">A case tracker with expiry alerts, kept current for Tribe's remote team.</p>
+      </article>
+
+      <article class="row">
+        <h4 class="ask">Create and manage policy</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip done">Done</span><span class="chip built">Built</span></div>
+          <p>Built the People Ops playbooks the team ran from.</p>
+          <p>HR Policy RAG Chatbot answers from the policy itself.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">Policies kept in one place, with the chatbot answering from the latest version.</p>
+      </article>
+    </div>
+
+    <div class="group">
+      <h3>Employee advocate</h3>
+
+      <article class="row">
+        <h4 class="ask">Be the first stop for HR questions: resolve, or route to the right person</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip done">Done</span><span class="chip built">Built</span></div>
+          <p>Built AskPeople, the front door for every employee inquiry and request. A Jira ticketing system keeps everything managed and tracked.</p>
+          <p>PeoplePal keeps employees and managers connected to the team.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">AskPeople on the tools Tribe already uses, so every request is answered or routed to an owner and tracked to done.</p>
+      </article>
+    </div>
+
+    <div class="group">
+      <h3>About you</h3>
+
+      <article class="row">
+        <h4 class="ask">Track record owning HR operations and systems end to end at a scaling company (7+ years)</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip done">Done</span></div>
+          <p>13+ years in People Ops, including seven as Director of People Operations at Ridecell, building HR from scratch.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">The same approach for a company building its function now: systems first, then the programs on top.</p>
+      </article>
+
+      <article class="row">
+        <h4 class="ask">Fluent with AI tools, with real examples of automations or workflows you built</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip built">Built</span></div>
+          <p>Ten deployable People Ops repos, from a policy chatbot to a full-stack app.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">Walk through any of them live in the interview.</p>
+      </article>
+    </div>
+
+    <div class="group">
+      <h3>Nice to have</h3>
+
+      <article class="row">
+        <h4 class="ask">Compensation: bands, benchmarking and cycle mechanics</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip would">Would build</span></div>
+          <p>Offer/Comp Reviewer is my starting point.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">Extend the reviewer to check offers against bands and benchmarks, and to run cycle mechanics.</p>
+      </article>
+
+      <article class="row">
+        <h4 class="ask">Experience with Ashby</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip would">Would build</span></div>
+          <p>Next on my list. The first handoff I would build is Ashby to Rippling.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">Candidate to employee in one step: an accepted offer creates the Rippling record with no re-keying.</p>
+      </article>
+
+      <article class="row">
+        <h4 class="ask">Building MCP or API-based integrations</h4>
+        <div class="have" data-label="What I have done and built">
+          <div class="chips"><span class="chip built">Built</span></div>
+          <p>MCP workflows across onboarding, offboarding, interviews, leave and org charts.</p>
+        </div>
+        <p class="build" data-label="How I would build it at Tribe">Connect Rippling, Ashby and Tribe's internal tools so people data moves on its own.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="plan-h">
+    <h2 id="plan-h">My first 90 days</h2>
+    <p class="sub">What I would build, in the order a scaling team feels it.</p>
+    <div class="plan">
+      <article class="step">
+        <b>30</b>
+        <p class="caption">Days</p>
+        <p>Audit Rippling and map every manual step across hire, change, leave and exit. Fix the highest-friction step first.</p>
+      </article>
+      <article class="step">
+        <b>60</b>
+        <p class="caption">Days</p>
+        <p>Automate the lifecycle on top of Rippling and Ashby with MCP integrations: offer, onboarding, changes, leave and offboarding.</p>
+      </article>
+      <article class="step">
+        <b>90</b>
+        <p class="caption">Days</p>
+        <p>Stand up reporting and the compliance calendar, and launch the HR front door so every request is answered or routed and tracked.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer>
+    <p class="caption"><strong>Cat Nolasco</strong> · People Ops. Powered by AI.</p>
+    <p>Role details from Tribe's posting for Senior People Operations Manager.</p>
+  </footer>
+</div>

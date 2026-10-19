@@ -1,0 +1,256 @@
+<title>Cat x Tribe</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap" rel="stylesheet">
+<style>
+  /* Layout: centered hero over thin orbit circles, then a four-stage lifecycle track and three proof tiles. Palette and type follow the tribe.ai site: warm off-white, deep blue-black ink, light serif headlines, aqua / blue / orange dots. */
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --ink: #06141B;
+    --muted: #4F5B60;
+    --line: #D9DCD6;
+    --accent: #0A99C3;
+    --label: #07404F;
+    --dot-1: #65D9EE;
+    --dot-2: #0A99C3;
+    --dot-3: #FF7C0F;
+    --dot-4: #AD5913;
+    --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
+    --font-body: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #06141B;
+      --surface: #0C2029;
+      --ink: #EBEBE2;
+      --muted: #9FB0B8;
+      --line: #1F3A46;
+      --accent: #65D9EE;
+      --label: #B2F3FF;
+      --dot-1: #65D9EE;
+      --dot-2: #2BB4DC;
+      --dot-3: #FF7C0F;
+      --dot-4: #E08A3C;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #06141B;
+    --surface: #0C2029;
+    --ink: #EBEBE2;
+    --muted: #9FB0B8;
+    --line: #1F3A46;
+    --accent: #65D9EE;
+    --label: #B2F3FF;
+    --dot-1: #65D9EE;
+    --dot-2: #2BB4DC;
+    --dot-3: #FF7C0F;
+    --dot-4: #E08A3C;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    padding-block: 1.5rem 3rem;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 3.5rem; }
+
+  .caption {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding: 4.5rem 0.5rem 4rem;
+  }
+  .orbits { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .orbits circle.ring { fill: none; stroke: var(--line); stroke-width: 1; }
+  .orbits .d1 { fill: var(--dot-1); }
+  .orbits .d2 { fill: var(--dot-2); }
+  .orbits .d3 { fill: var(--dot-3); }
+  .orbits .d4 { fill: var(--dot-4); }
+  .hero-inner { position: relative; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2.25rem, 6vw, 4.25rem);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    margin: 0;
+    max-width: 19ch;
+    text-wrap: balance;
+  }
+  h1 .hl { color: var(--accent); }
+  .who { margin: 0; color: var(--muted); font-size: 1.125rem; max-width: 56ch; text-wrap: pretty; }
+  .who strong { color: var(--ink); font-weight: 600; }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.625rem, 3.2vw, 2.25rem);
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    margin: 0 0 2rem;
+    text-align: center;
+  }
+
+  /* Lifecycle track */
+  .track { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.75rem; }
+  .stage { position: relative; border-top: 1px solid var(--line); padding-top: 1.5rem; min-width: 0; }
+  .stage::before {
+    content: "";
+    position: absolute; top: -6px; left: 0;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--dot);
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--dot) 22%, transparent);
+  }
+  .stage h3 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 2.25rem;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 1rem;
+  }
+  .stage ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.875rem; }
+  .stage li { min-width: 0; }
+  .repo { display: block; font-weight: 600; color: var(--label); overflow-wrap: anywhere; }
+  .note { display: block; color: var(--muted); font-size: 0.9375rem; margin-top: 0.125rem; }
+
+  /* Proof tiles */
+  .proof { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1.5rem 1.5rem 1.625rem; min-width: 0; }
+  .tile h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+  }
+  .tile p { margin: 0; color: var(--muted); font-size: 1rem; }
+  .tile p + p { margin-top: 0.75rem; }
+  .tile .stack { color: var(--ink); font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  footer {
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    border-top: 1px solid var(--line); padding-top: 1.5rem; text-align: center;
+  }
+  footer .caption strong { color: var(--ink); font-weight: 600; }
+  footer p { margin: 0; color: var(--muted); font-size: 0.9375rem; }
+
+  @media (max-width: 900px) {
+    .track { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 2.5rem; }
+    .proof { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 560px) {
+    body { padding-block: 1rem 2rem; }
+    .wrap { gap: 2.5rem; }
+    .hero { padding: 3rem 0 2.5rem; }
+    .track { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .stage { border-top: none; border-left: 1px solid var(--line); padding: 0 0 2rem 1.5rem; }
+    .stage:last-child { padding-bottom: 0; }
+    .stage::before { top: 6px; left: -6px; }
+    .stage h3 { font-size: 1.875rem; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <svg class="orbits" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+      <circle class="ring" cx="500" cy="280" r="130"/>
+      <circle class="ring" cx="500" cy="280" r="215"/>
+      <circle class="ring" cx="500" cy="280" r="310"/>
+      <circle class="ring" cx="500" cy="280" r="420"/>
+      <circle class="d1" cx="330" cy="190" r="8"/>
+      <circle class="d2" cx="780" cy="150" r="7"/>
+      <circle class="d3" cx="860" cy="360" r="6"/>
+      <circle class="d4" cx="210" cy="400" r="5"/>
+      <circle class="d1" cx="640" cy="500" r="4"/>
+    </svg>
+    <div class="hero-inner">
+      <p class="caption">Senior People Operations Manager · Tribe AI</p>
+      <h1>Internal systems as <span class="hl">thoughtful</span> as what you build for clients.</h1>
+      <p class="who"><strong>Cat Nolasco.</strong> People Ops leader, 13+ years, SHRM-CP. This is the work I have already built, laid out against the four things your role runs: every hire, change, leave and exit.</p>
+    </div>
+  </header>
+
+  <section aria-labelledby="track-h">
+    <h2 id="track-h">The employee lifecycle, automated</h2>
+    <div class="track">
+      <article class="stage" style="--dot: var(--dot-1)">
+        <h3>Hire</h3>
+        <ul>
+          <li><span class="repo">C-suite TA Orchestrator</span><span class="note">Orchestrates talent acquisition for the C-suite</span></li>
+          <li><span class="repo">Offer/Comp Reviewer</span><span class="note">Checks an offer before it goes out</span></li>
+          <li><span class="repo">Onboarding Workflow</span><span class="note">Moves a new hire from offer to day one</span></li>
+          <li><span class="repo">Onboarding Chatbot</span><span class="note">Answers new-hire questions from day one</span></li>
+        </ul>
+      </article>
+      <article class="stage" style="--dot: var(--dot-2)">
+        <h3>Change</h3>
+        <ul>
+          <li><span class="repo">Employee Change Agent</span><span class="note">An agent that handles employment changes</span></li>
+          <li><span class="repo">MCP org chart pulls</span><span class="note">Live people data for cross-functional partners</span></li>
+        </ul>
+      </article>
+      <article class="stage" style="--dot: var(--dot-3)">
+        <h3>Leave</h3>
+        <ul>
+          <li><span class="repo">Parental Leave Agent</span><span class="note">Supports leave planning from notice through return</span></li>
+          <li><span class="repo">MCP leave analysis</span><span class="note">Balances and patterns pulled straight from the system of record</span></li>
+        </ul>
+      </article>
+      <article class="stage" style="--dot: var(--dot-4)">
+        <h3>Exit</h3>
+        <ul>
+          <li><span class="repo">Offboarding Workflow</span><span class="note">Runs every exit the same way</span></li>
+          <li><span class="repo">Multi-Agent Offboarding System</span><span class="note">One run across every handoff</span></li>
+          <li><span class="repo">Exit Interview Analyzer</span><span class="note">Turns exits into themes leadership can act on</span></li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="proof-h">
+    <h2 id="proof-h">Underneath it</h2>
+    <div class="proof">
+      <article class="tile">
+        <h3>Systems and automation</h3>
+        <p>Led HRIS migrations at Ridecell and built the People Ops playbooks the team ran from. Onboarding, offboarding, stay interviews and exit interviews all ran through MCP.</p>
+        <p class="stack">Rippling · Workday · ADP · SuccessFactors · UKG</p>
+      </article>
+      <article class="tile">
+        <h3>Benefits, compliance, work authorization</h3>
+        <p>Ran benefits, compliance and immigration programs across eight countries: the US, UK, Germany, Spain, France, India, Japan and Dubai. I stood up WVPP, E-Verify and I-9 from zero, and built an I-9 Compliance QA tool.</p>
+        <p>Also built a compliance calendar and auditor on top of it.</p>
+      </article>
+      <article class="tile">
+        <h3>The front door for HR questions</h3>
+        <p>Built AskPeople at Ridecell, the front door for every employee inquiry and request. One global channel, turnaround times set by request type, and a Jira ticketing system that keeps everything managed and tracked. Also built an HR Policy RAG Chatbot to answer from the policy itself.</p>
+        <p>PeoplePal, an app for employees and managers, keeps everyone connected to the team.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer>
+    <p class="caption"><strong>Cat Nolasco</strong> · People Ops. Powered by AI.</p>
+    <p>Deployable People Ops tools and AI agents, from policy chatbot to full-stack app</p>
+  </footer>
+</div>

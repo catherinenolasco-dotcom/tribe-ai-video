@@ -1,0 +1,297 @@
+<title>Employee Change Agent Demo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap">
+<style>
+/* Layout: form on the left, live agent review on the right, approval chain beneath */
+:root{
+  --bg:#FAFAF8; --ink:#06141B; --muted:#4F5B60; --line:#D9DCD6; --accent:#0A99C3; --label:#07404F;
+  --surface:#FFFFFF; --soft:#F0F2EE; --ok:#1B7F5A; --warn:#B5530A; --warn-bg:#FFF1E3; --ok-bg:#E4F4EC;
+  --dot-1:#65D9EE; --dot-3:#FF7C0F; --accent-ink:#FFFFFF;
+  --display:'Newsreader',Georgia,serif; --body:'Hanken Grotesk',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#06141B; --ink:#EBEBE2; --muted:#9BAAB0; --line:#1F3A46; --accent:#65D9EE; --label:#B2F3FF;
+  --surface:#0C2029; --soft:#0A1B23; --ok:#5FD3A0; --warn:#FFA85C; --warn-bg:#2A1A0C; --ok-bg:#0D2A21;
+  --accent-ink:#06141B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#06141B; --ink:#EBEBE2; --muted:#9BAAB0; --line:#1F3A46; --accent:#65D9EE; --label:#B2F3FF;
+  --surface:#0C2029; --soft:#0A1B23; --ok:#5FD3A0; --warn:#FFA85C; --warn-bg:#2A1A0C; --ok-bg:#0D2A21;
+  --accent-ink:#06141B; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--label);font-weight:600}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(34px,5vw,52px);line-height:1.05;margin:8px 0 0;text-wrap:balance;letter-spacing:-.01em}
+.sample{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:6px 10px;background:var(--surface)}
+.grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:20px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:22px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.panel h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
+.emp{display:flex;gap:14px;align-items:center;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.av{width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:600;flex:none}
+.emp b{display:block}.emp span{color:var(--muted);font-size:13px}
+.seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+@media(max-width:480px){.seg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.seg button{font:inherit;font-size:13px;font-weight:500;padding:9px 6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media(max-width:480px){.fields{grid-template-columns:minmax(0,1fr)}}
+label{display:flex;flex-direction:column;gap:5px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+input,select{font:inherit;font-size:15px;letter-spacing:0;text-transform:none;font-weight:400;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 10px;width:100%;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.span2{grid-column:1/-1}
+.btn{font:inherit;font-weight:600;border:0;border-radius:6px;padding:11px 18px;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.agent-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pill{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.pill.ok{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+.pill.warn{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.checks li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;padding:12px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.checks li.pending{opacity:.45}
+.checks li.run .ic{animation:pulse 1s infinite}
+.checks li strong{display:block;font-weight:600}
+.checks li span.d{color:var(--muted);font-size:13px}
+.ic{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;margin-top:2px;background:var(--soft);color:var(--muted)}
+.ic.ok{background:var(--ok);color:var(--surface)}.ic.warn{background:var(--dot-3);color:#06141B}
+@keyframes pulse{50%{opacity:.3}}
+.chain{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;position:relative}
+@media(max-width:700px){.chain{grid-template-columns:minmax(0,1fr)}}
+.step{padding:14px 14px 14px 0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.step .bar{height:4px;border-radius:2px;background:var(--line)}
+.step.done .bar{background:var(--accent)}
+.step small{color:var(--muted);font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.step b{font-weight:600}
+.summary{background:var(--soft);border-radius:6px;padding:14px;font-size:14px;display:flex;flex-direction:column;gap:6px}
+.summary .k{color:var(--muted)}
+.toast{padding:12px 14px;border-radius:6px;background:var(--ok-bg);color:var(--ok);font-weight:600}
+.foot{color:var(--muted);font-size:12px}
+.appr{border:1px solid var(--accent);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
+.appr h3{font-family:var(--display);font-weight:400;font-size:20px;margin:0}
+.ba{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr);border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:14px}
+.ba div{padding:9px 10px;border-top:1px solid var(--line);min-width:0;overflow-wrap:anywhere}
+.ba .h{border-top:0;background:var(--soft);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.ba .b{color:var(--muted);text-decoration:line-through}
+.ba .a{font-weight:600;color:var(--label)}
+.who{display:flex;gap:10px;align-items:center;font-size:14px}
+.who .av{width:32px;height:32px;font-size:12px}
+.done-msg{padding:10px 12px;border-radius:6px;background:var(--ok-bg);color:var(--ok);font-weight:600}
+@media (prefers-reduced-motion:reduce){.checks li.run .ic{animation:none}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">People Ops · Employee Action Form</div>
+      <h1>Employee Change Agent</h1>
+    </div>
+    <div class="sample">Sample employee and made-up data. Styled in Tribe AI colors.</div>
+  </header>
+
+  <div class="grid">
+    <section class="panel" aria-labelledby="f">
+      <h2 id="f">Request a change</h2>
+      <div class="emp">
+        <div class="av">JR</div>
+        <div><b>Jordan Rivera</b><span>Senior Customer Success Manager · Austin, US · Reports to Priya Shah</span></div>
+      </div>
+      <div class="seg" id="seg" role="group" aria-label="Change type"></div>
+      <div class="fields" id="fields"></div>
+      <div class="row">
+        <button class="btn" id="run">Run agent review</button>
+        <button class="btn ghost" id="reset">Reset</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="a" aria-live="polite">
+      <div class="agent-head"><h2 id="a">Agent review</h2><span class="pill" id="status">Not run</span></div>
+      <ul class="checks" id="checks"></ul>
+      <div class="summary" id="summary"></div>
+      <div class="row"><button class="btn" id="submit" disabled>Send for approval</button></div>
+      <div id="toast"></div>
+      <div id="approval"></div>
+    </section>
+  </div>
+
+  <section class="panel" aria-labelledby="c">
+    <h2 id="c">Approval chain</h2>
+    <div class="chain" id="chain"></div>
+    <div class="foot">The agent drafts the ticket, checks policy and payroll cutoffs, and routes it. People make the decisions.</div>
+  </section>
+</div>
+
+<script>
+const TYPES = {
+  Compensation: {
+    fields: [
+      {id:'cur',l:'Current base',t:'text',v:'$128,000',ro:true},
+      {id:'new',l:'New base',t:'text',v:'$138,000'},
+      {id:'eff',l:'Effective date',t:'date',v:'2026-11-01'},
+      {id:'why',l:'Reason',t:'select',o:['Merit increase','Promotion','Market adjustment'],v:'Merit increase'}
+    ],
+    checks: [
+      ['Pay band','$138,000 is inside the L5 band ($118,000 to $152,000).','ok'],
+      ['Payroll cutoff','Effective 11/01 falls in the next cycle. Cutoff is 10/25.','ok'],
+      ['Increase size','7.8% increase. Over 7% needs finance review.','warn'],
+      ['Benefits impact','No change to plan eligibility.','ok']
+    ],
+    chain: [['Manager','Priya Shah'],['People Ops','Review'],['Finance','Over 7%'],['Payroll','Update record']]
+  },
+  Title: {
+    fields: [
+      {id:'cur',l:'Current title',t:'text',v:'Senior Customer Success Manager',ro:true},
+      {id:'new',l:'New title',t:'text',v:'Principal Customer Success Manager'},
+      {id:'eff',l:'Effective date',t:'date',v:'2026-11-01'},
+      {id:'lvl',l:'Level',t:'select',o:['L5','L6','L7'],v:'L6'}
+    ],
+    checks: [
+      ['Leveling guide','Title matches the L6 ladder for Customer Success.','ok'],
+      ['Pay band','Current base sits below the L6 minimum. Pair with a pay change.','warn'],
+      ['Org chart','No change to reporting line.','ok'],
+      ['Records','HRIS title, email signature and directory will update.','ok']
+    ],
+    chain: [['Manager','Priya Shah'],['Department head','Approve level'],['People Ops','Review'],['Payroll','Update record']]
+  },
+  Manager: {
+    fields: [
+      {id:'cur',l:'Current manager',t:'text',v:'Priya Shah',ro:true},
+      {id:'new',l:'New manager',t:'select',o:['Marcus Lee','Dana Okafor','Sam Patel'],v:'Marcus Lee'},
+      {id:'eff',l:'Effective date',t:'date',v:'2026-11-15'},
+      {id:'why',l:'Reason',t:'select',o:['Team reorg','Employee request','Span of control'],v:'Team reorg'}
+    ],
+    checks: [
+      ['Span of control','Marcus Lee would have 8 direct reports. Limit is 10.','ok'],
+      ['Reporting loop','No circular reporting found.','ok'],
+      ['Access','Jira and HRIS permissions move with the manager.','ok'],
+      ['Notice','Both managers and the employee get a notice.','ok']
+    ],
+    chain: [['Current manager','Priya Shah'],['New manager','Marcus Lee'],['People Ops','Review'],['HRIS','Update record']]
+  },
+  Location: {
+    fields: [
+      {id:'cur',l:'Current location',t:'text',v:'Austin, United States',ro:true},
+      {id:'new',l:'New location',t:'select',o:['Berlin, Germany','Madrid, Spain','London, United Kingdom','Tokyo, Japan'],v:'Berlin, Germany'},
+      {id:'eff',l:'Effective date',t:'date',v:'2027-01-04'},
+      {id:'why',l:'Reason',t:'select',o:['Employee relocation','Team need'],v:'Employee relocation'}
+    ],
+    checks: [
+      ['Work authorization','Right to work in the new country must be confirmed.','warn'],
+      ['Payroll entity','A local entity or employer of record is required.','warn'],
+      ['Benefits','Local plan applies. US plan ends on the effective date.','ok'],
+      ['Compliance','Local contract and data privacy notice added to the checklist.','ok']
+    ],
+    chain: [['Manager','Priya Shah'],['People Ops','Immigration and legal'],['Finance','Payroll entity'],['Employee','Sign new terms']]
+  }
+};
+const $ = s => document.querySelector(s);
+let cur = 'Compensation', timers = [], ran = false;
+
+function stop(){ timers.forEach(clearTimeout); timers = []; }
+function drawSeg(){
+  $('#seg').innerHTML = Object.keys(TYPES).map(k =>
+    `<button type="button" aria-pressed="${k===cur}" data-k="${k}">${k}</button>`).join('');
+  $('#seg').querySelectorAll('button').forEach(b => b.onclick = () => { cur = b.dataset.k; stop(); ran=false; drawAll(); });
+}
+function drawFields(){
+  $('#fields').innerHTML = TYPES[cur].fields.map(f => {
+    const c = f.t==='select'
+      ? `<select id="${f.id}">${f.o.map(o=>`<option${o===f.v?' selected':''}>${o}</option>`).join('')}</select>`
+      : `<input id="${f.id}" type="${f.t}" value="${f.v}"${f.ro?' readonly':''}>`;
+    return `<label class="${f.id==='cur'||f.id==='new'?'span2':''}" for="${f.id}">${f.l}${c}</label>`;
+  }).join('');
+  $('#fields').querySelectorAll('input,select').forEach(e => e.oninput = drawSummary);
+}
+function val(id){ const e = document.getElementById(id); return e ? e.value : ''; }
+function drawSummary(){
+  const t = TYPES[cur];
+  $('#summary').innerHTML =
+    `<div><span class="k">Ticket draft</span></div>
+     <div><b>${cur} change</b> for Jordan Rivera</div>
+     <div><span class="k">From</span> ${val('cur')} <span class="k">to</span> ${val('new')}</div>
+     <div><span class="k">Effective</span> ${val('eff')}</div>`;
+}
+function drawChecks(state){
+  const t = TYPES[cur];
+  $('#checks').innerHTML = t.checks.map((c,i) => {
+    const s = state[i] || 'pending';
+    const mark = s==='ok' ? '✓' : s==='warn' ? '!' : '';
+    return `<li class="${s==='pending'?'pending':s==='run'?'run':''}"><div class="ic ${s==='ok'||s==='warn'?s:''}">${mark}</div>
+      <div><strong>${c[0]}</strong><span class="d">${s==='pending'||s==='run' ? 'Checking...' : c[1]}</span></div></li>`;
+  }).join('');
+}
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function drawChain(done){
+  $('#chain').innerHTML = TYPES[cur].chain.map((s,i) =>
+    `<div class="step${i<done?' done':''}"><div class="bar"></div><small>Step ${i+1}</small><b>${s[0]}</b><span class="foot">${s[1]}</span></div>`).join('');
+}
+function drawAll(){
+  drawSeg(); drawFields(); drawSummary();
+  drawChecks([]); drawChain(0);
+  $('#status').className='pill'; $('#status').textContent='Not run';
+  $('#submit').disabled = true; $('#toast').innerHTML=''; $('#approval').innerHTML='';
+}
+function num(s){ return parseFloat(String(s).replace(/[^0-9.]/g,'')) || 0; }
+function diffRows(){
+  const eff = val('eff');
+  let rows = [];
+  if(cur==='Compensation'){
+    const a = num(val('cur')), b = num(val('new')), pct = a ? ((b-a)/a*100) : 0;
+    rows = [['Base salary', val('cur'), val('new')], ['Increase', 'None', (pct>=0?'+':'')+pct.toFixed(1)+'%'], ['Pay band', 'L5', 'L5 (inside band)']];
+  } else if(cur==='Title'){
+    rows = [['Title', val('cur'), val('new')], ['Level', 'L5', val('lvl')], ['Reporting line', 'No change', 'No change']];
+  } else if(cur==='Manager'){
+    rows = [['Manager', val('cur'), val('new')], ['Manager direct reports', '7', '8'], ['System access', 'Current manager', 'Moves with manager']];
+  } else {
+    rows = [['Location', val('cur'), val('new')], ['Benefits', 'US plan', 'Local plan'], ['Payroll entity', 'US entity', 'Local entity or EOR']];
+  }
+  rows.push(['Effective date', 'Current', eff]);
+  return rows;
+}
+function drawApproval(){
+  const t = TYPES[cur], first = t.chain[0];
+  const rows = diffRows();
+  $('#approval').innerHTML = `<div class="appr">
+    <h3>Approval request for ${esc(first[0])}</h3>
+    <div class="who"><div class="av">${esc(first[1].split(' ').map(p=>p[0]).join('').slice(0,2))}</div><div>${esc(first[1])} is asked to approve ${esc(cur.toLowerCase())} change for Jordan Rivera</div></div>
+    <div class="ba"><div class="h">Field</div><div class="h">Before</div><div class="h">After</div>
+      ${rows.map(r=>`<div>${esc(r[0])}</div><div class="b">${esc(r[1])}</div><div class="a">${esc(r[2])}</div>`).join('')}</div>
+    <div class="foot">Agent notes: ${t.checks.filter(c=>c[2]==='warn').map(c=>esc(c[0])+' flagged').join(', ') || 'no flags'}. Sample data.</div>
+    <div class="row"><button class="btn" id="approve">Approve change</button><button class="btn ghost" id="changes">Request changes</button></div>
+    <div id="decision"></div></div>`;
+  $('#approve').onclick = () => {
+    drawChain(1);
+    $('#decision').innerHTML = '<div class="done-msg">Approved by '+esc(first[1])+'. Routed to '+esc(t.chain[1][0])+'. Sample only.</div>';
+    $('#approve').disabled = true; $('#changes').disabled = true;
+  };
+  $('#changes').onclick = () => {
+    $('#decision').innerHTML = '<div class="done-msg" style="background:var(--warn-bg);color:var(--warn)">Sent back to the requester with a note. Sample only.</div>';
+    $('#approve').disabled = true; $('#changes').disabled = true;
+  };
+}
+function run(){
+  stop(); const t = TYPES[cur], st = [];
+  $('#status').className='pill'; $('#status').textContent='Reviewing'; $('#submit').disabled = true; $('#toast').innerHTML='';
+  t.checks.forEach((c,i) => {
+    timers.push(setTimeout(()=>{ st[i]='run'; drawChecks(st); }, i*650));
+    timers.push(setTimeout(()=>{ st[i]=c[2]; drawChecks(st); }, i*650+500));
+  });
+  timers.push(setTimeout(()=>{
+    const w = t.checks.filter(c=>c[2]==='warn').length;
+    $('#status').className = 'pill ' + (w?'warn':'ok');
+    $('#status').textContent = w ? w+' to review' : 'Ready';
+    $('#submit').disabled = false; ran = true;
+  }, t.checks.length*650+200));
+}
+$('#run').onclick = run;
+$('#reset').onclick = () => { stop(); drawAll(); };
+$('#submit').onclick = () => {
+  drawChain(0); drawApproval();
+  $('#toast').innerHTML = '<div class="toast">Sample ticket CHG-2041 created and routed to '+TYPES[cur].chain[0][0]+'. Nothing was sent.</div>';
+  $('#submit').disabled = true;
+};
+drawAll();
+</script>
