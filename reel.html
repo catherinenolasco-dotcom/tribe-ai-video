@@ -696,6 +696,10 @@
   document.getElementById('prev').addEventListener('click', function () { go(idx - 1); });
   document.getElementById('next').addEventListener('click', function () { go(idx + 1); });
   document.getElementById('restart').addEventListener('click', restart);
+  document.addEventListener('keyup', function (e) { if (e.code === 'Space') e.preventDefault(); });
+  Array.prototype.slice.call(document.querySelectorAll('.controls button')).forEach(function (b) {
+    b.addEventListener('click', function () { b.blur(); });
+  });
   var appEl = document.querySelector('.app');
   function toggleClean() { appEl.classList.toggle('clean'); }
   document.getElementById('clean').addEventListener('click', function () { this.blur(); toggleClean(); });
@@ -703,7 +707,6 @@
     document.addEventListener(ev, wake, { passive: true });
   });
   document.addEventListener('keydown', function (e) {
-    if (e.target && e.target.tagName === 'BUTTON' && e.code === 'Space') return;
     if (e.code === 'Space') { e.preventDefault(); toggle(); }
     else if (e.code === 'ArrowRight') { e.preventDefault(); go(idx + 1); }
     else if (e.code === 'ArrowLeft') { e.preventDefault(); go(idx - 1); }
