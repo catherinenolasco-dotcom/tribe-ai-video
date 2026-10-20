@@ -594,9 +594,10 @@
     <button id="next" type="button">Next</button>
     <button id="restart" type="button">Restart</button>
     <button id="clean" type="button">Hide buttons</button>
+    <button id="mode" type="button">Mode: Manual</button>
     <span class="status" id="status" aria-live="polite">Press Start when you begin talking.</span>
   </div>
-  <p class="hint">Runs 69 seconds, timed to the script. Space pauses for a live demo. Arrow keys move between scenes. R restarts. H hides or shows these buttons.</p>
+  <p class="hint">Runs 69 seconds, timed to the script. Manual mode (default): Space moves to the next scene when you are ready. Press M for timed mode, where Space pauses. Arrow keys move between scenes. R restarts. H hides or shows these buttons.</p>
 </div>
 
 <script>
@@ -626,7 +627,7 @@
     var s = scenes[idx];
     if (isHold(s)) statusEl.textContent = 'Holding for your live demo. Press the right arrow when you are back.';
     else if (ended) statusEl.textContent = 'Done. Press Restart to run it again.';
-    else if (!started) statusEl.textContent = 'Press Start when you begin talking.';
+    else if (!started) statusEl.textContent = manual ? 'Press Space when you begin talking, then Space for each next scene.' : 'Press Start when you begin talking.';
     else if (!playing) statusEl.textContent = 'Paused.';
     else statusEl.textContent = '';
   }
@@ -649,10 +650,11 @@
   function clearT() { if (timer) { clearTimeout(timer); timer = null; } }
   function arm(ms) {
     clearT();
-    if (!playing || isHold(scenes[idx])) return;
+    if (!playing || manual || isHold(scenes[idx])) return;
     remaining = ms; startedAt = Date.now();
     timer = setTimeout(advance, ms);
   }
+  var manual = true;
   function advance() {
     if (idx < scenes.length - 1) { go(idx + 1); }
     else { playing = false; ended = true; clearT(); stage.classList.add('paused'); setLabel(); setStatus(); wake(); }
@@ -701,17 +703,31 @@
     b.addEventListener('click', function () { b.blur(); });
   });
   var appEl = document.querySelector('.app');
+  function toggleMode() {
+    manual = !manual;
+    document.getElementById('mode').textContent = manual ? 'Mode: Manual' : 'Mode: Timed';
+    if (manual) { if (timer) remaining = Math.max(0, remaining - (Date.now() - startedAt)); clearT(); }
+    else if (playing) { arm(remaining || dur(scenes[idx]) * 1000); }
+  }
+  document.getElementById('mode').addEventListener('click', toggleMode);
   function toggleClean() { appEl.classList.toggle('clean'); }
   document.getElementById('clean').addEventListener('click', function () { this.blur(); toggleClean(); });
   ['mousemove', 'touchstart', 'keydown'].forEach(function (ev) {
     document.addEventListener(ev, wake, { passive: true });
   });
   document.addEventListener('keydown', function (e) {
-    if (e.code === 'Space') { e.preventDefault(); toggle(); }
+    if (e.code === 'Space') {
+      e.preventDefault();
+      if (!manual) toggle();
+      else if (ended) restart();
+      else if (!started) play();
+      else advance();
+    }
     else if (e.code === 'ArrowRight') { e.preventDefault(); go(idx + 1); }
     else if (e.code === 'ArrowLeft') { e.preventDefault(); go(idx - 1); }
     else if (e.code === 'KeyR') { restart(); }
     else if (e.code === 'KeyH') { toggleClean(); }
+    else if (e.code === 'KeyM') { toggleMode(); }
   });
 
   var mt = document.getElementById('mtrack');
